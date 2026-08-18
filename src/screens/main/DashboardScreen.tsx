@@ -6,9 +6,13 @@ import SalesCard from '../../components/dashboard/SalesCard';
 import StatCard from '../../components/dashboard/StatCard';
 import QuickActionButton from '../../components/dashboard/QuickActionButton';
 import { mockDashboardStats, mockUser } from '../../types/mockData';
+import { useProducts } from '../../context/ProductsContext';
 
 export default function DashboardScreen({ navigation }: any) {
   const stats = mockDashboardStats;
+  const { products } = useProducts();
+  const lowStockCount = products.filter((p) => p.status === 'low-stock').length;
+  const outOfStockCount = products.filter((p) => p.status === 'out-of-stock').length;
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -52,20 +56,32 @@ export default function DashboardScreen({ navigation }: any) {
       </View>
 
       <View style={styles.statsRow}>
-        <StatCard
-          icon="link"
-          label="Outstanding"
-          value={`KSh ${stats.outstanding.toLocaleString()}`}
-          iconBackground="#FCE7F3"
-          iconColor="#DB2777"
-        />
+      <StatCard
+                icon="alert-triangle"
+                label="Low Stock"
+                value={lowStockCount.toString()}
+                iconBackground="#FEE2E2"
+                iconColor="#DC2626"
+                onPress={() =>
+                  navigation.navigate('Products', {
+                    screen: 'ProductsList',
+                    params: { filter: 'Low Stock' },
+                  })
+                }
+              />
         <View style={{ width: spacing.md }} />
-        <StatCard
-          icon="users"
-          label="Customers"
-          value={stats.customers.toString()}
-          iconBackground="#DBEAFE"
-          iconColor="#2563EB"
+       <StatCard
+          icon="x-circle"
+          label="Out of Stock"
+          value={outOfStockCount.toString()}
+          iconBackground="#FFE4E6"
+          iconColor="#E11D48"
+          onPress={() =>
+            navigation.navigate('Products', {
+              screen: 'ProductsList',
+              params: { filter: 'Out of Stock' },
+            })
+          }
         />
       </View>
 

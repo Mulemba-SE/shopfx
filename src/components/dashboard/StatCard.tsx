@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { colors, spacing } from '../../theme/colors';
 
@@ -10,6 +10,7 @@ interface StatCardProps {
   changePercent?: number;
   iconBackground: string;
   iconColor: string;
+  onPress?: () => void;
 }
 
 export default function StatCard({
@@ -19,11 +20,14 @@ export default function StatCard({
   changePercent,
   iconBackground,
   iconColor,
+  onPress,
 }: StatCardProps) {
   const isPositive = (changePercent ?? 0) >= 0;
+  const wrapperProps = onPress ? { onPress, activeOpacity: 0.7 } : {};
+  const Wrapper = onPress ? TouchableOpacity : View;
 
   return (
-    <View style={styles.card}>
+    <Wrapper style={styles.card} {...wrapperProps}>
       <View style={styles.topRow}>
         <Text style={styles.label}>{label}</Text>
         <View style={[styles.iconCircle, { backgroundColor: iconBackground }]}>
@@ -37,7 +41,7 @@ export default function StatCard({
           {changePercent}%
         </Text>
       )}
-    </View>
+    </Wrapper>
   );
 }
 

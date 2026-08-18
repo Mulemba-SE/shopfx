@@ -11,7 +11,6 @@ export interface DashboardStats {
   transactionsChangePercent: number;
   itemsSold: number;
   itemsSoldChangePercent: number;
-  outstanding: number;
   customers: number;
   chartData: SalesDataPoint[];
 }
@@ -24,7 +23,6 @@ export const mockDashboardStats: DashboardStats = {
   transactionsChangePercent: 8.2,
   itemsSold: 342,
   itemsSoldChangePercent: 15.7,
-  outstanding: 32640,
   customers: 256,
   chartData: [
     { time: '12 AM', value: 20 },

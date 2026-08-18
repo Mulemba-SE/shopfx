@@ -2,11 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { colors, spacing } from '../../theme/colors';
+import { PlaceholderScreenProps } from '../../types/placeholder';
 
-interface PlaceholderScreenProps {
-  title: string;
-  icon: string;
-}
 
 export default function PlaceholderScreen({ title, icon }: PlaceholderScreenProps) {
   return (

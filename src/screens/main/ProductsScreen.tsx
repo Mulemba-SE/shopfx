@@ -23,9 +23,9 @@ const filterToStatus: Record<string, StockStatus | null> = {
   'Out of Stock': 'out-of-stock',
 };
 
-export default function ProductsScreen({ navigation }: any) {
+export default function ProductsScreen({ navigation, route }: any) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeTab, setActiveTab] = useState(route?.params?.filter ?? 'All');
 
   const { products } = useProducts();
   const filteredProducts = useMemo(() => {

@@ -6,58 +6,42 @@ import { colors, spacing } from '../../theme/colors';
 import PaymentMethodRow from '../../components/checkout/PaymentMethodRow';
 import GradientButton from '../../components/GradientButton';
 import { useCart } from '../../context/CartContext';
+import { SoldItem } from '../../types/transaction';
+import { PAYMENT_METHODS } from '../../data/paymentMethods';
 
 const TAX_RATE = 0.16;
 
-const PAYMENT_METHODS = [
-  {
-    id: 'cash',
-    icon: 'dollar-sign',
-    iconColor: '#16A34A',
-    iconBackground: '#DCFCE7',
-    label: 'Cash',
-    description: 'Pay with cash',
-  },
-  {
-    id: 'mpesa',
-    icon: 'smartphone',
-    iconColor: '#16A34A',
-    iconBackground: '#DCFCE7',
-    label: 'M-Pesa',
-    description: 'Pay with M-Pesa',
-  },
-  {
-    id: 'card',
-    icon: 'credit-card',
-    iconColor: '#2563EB',
-    iconBackground: '#DBEAFE',
-    label: 'Card',
-    description: 'Debit / Credit card',
-  },
-  {
-    id: 'other',
-    icon: 'list',
-    iconColor: '#7C3AED',
-    iconBackground: '#EDE9FE',
-    label: 'Other',
-    description: 'Other payment methods',
-  },
-];
-
 export default function CheckoutScreen({ navigation }: any) {
-  const { totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
   const tax = totalPrice * TAX_RATE;
   const total = totalPrice + tax;
 
-  function handleConfirmPayment() {
-    if (!selectedMethod) return;
-    // TODO: navigate to Transaction Details screen once it's built
-    // For now this just clears the cart to simulate a completed sale
-    clearCart();
-    navigation.navigate('SellHome');
-  }
+function handleConfirmPayment() {
+  if (!selectedMethod) return;
+
+  const methodLabel = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.label ?? 'Other';
+  const receiptNumber = `REC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const soldItems: SoldItem[] = items.map((item) => ({
+  name: item.product.name,
+  quantity: item.quantity,
+  price: item.product.price,
+}));
+
+    const transactionData = {
+    receiptNumber,
+    date: new Date().toISOString(),
+    subtotal: totalPrice,
+    tax,
+    total,
+    paymentMethod: methodLabel,
+    items: soldItems,
+  };
+
+  clearCart();
+  navigation.navigate('TransactionDetails', transactionData);
+}
 
   return (
     <View style={styles.screen}>
