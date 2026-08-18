@@ -5,6 +5,7 @@ import { ProductsProvider } from '../context/ProductsContext';
 import MainTabNavigator from './MainTabNavigator';
 import { CartProvider } from '../context/CartContext';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { TransactionsProvider } from '../context/TransactionsContext';
 
 function RootNavigatorInner() {
   const { isLoggedIn } = useAuth();
@@ -17,8 +18,10 @@ export default function RootNavigator() {
     <AuthProvider>
       <ProductsProvider>
         <CartProvider>
+        <TransactionsProvider>
           <RootNavigatorInner />
-        </CartProvider>
+        </TransactionsProvider>
+      </CartProvider>
       </ProductsProvider>
     </AuthProvider>
     </NavigationContainer>

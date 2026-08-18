@@ -6,6 +6,7 @@ import { colors, spacing } from '../../theme/colors';
 import PaymentMethodRow from '../../components/checkout/PaymentMethodRow';
 import GradientButton from '../../components/GradientButton';
 import { useCart } from '../../context/CartContext';
+import { useTransactions } from '../../context/TransactionsContext';
 import { SoldItem } from '../../types/transaction';
 import { PAYMENT_METHODS } from '../../data/paymentMethods';
 
@@ -13,35 +14,37 @@ const TAX_RATE = 0.16;
 
 export default function CheckoutScreen({ navigation }: any) {
   const { items, totalPrice, clearCart } = useCart();
+  const { addTransaction } = useTransactions();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
   const tax = totalPrice * TAX_RATE;
   const total = totalPrice + tax;
 
-function handleConfirmPayment() {
-  if (!selectedMethod) return;
+  function handleConfirmPayment() {
+    if (!selectedMethod) return;
 
-  const methodLabel = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.label ?? 'Other';
-  const receiptNumber = `REC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-  const soldItems: SoldItem[] = items.map((item) => ({
-  name: item.product.name,
-  quantity: item.quantity,
-  price: item.product.price,
-}));
+    const methodLabel = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.label ?? 'Other';
+    const receiptNumber = `REC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const soldItems: SoldItem[] = items.map((item) => ({
+      name: item.product.name,
+      quantity: item.quantity,
+      price: item.product.price,
+    }));
 
     const transactionData = {
-    receiptNumber,
-    date: new Date().toISOString(),
-    subtotal: totalPrice,
-    tax,
-    total,
-    paymentMethod: methodLabel,
-    items: soldItems,
-  };
+      receiptNumber,
+      date: new Date().toISOString(),
+      subtotal: totalPrice,
+      tax,
+      total,
+      paymentMethod: methodLabel,
+      items: soldItems,
+    };
 
-  clearCart();
-  navigation.navigate('TransactionDetails', transactionData);
-}
+    addTransaction(transactionData);
+    clearCart();
+    navigation.navigate('TransactionDetails', transactionData);
+  }
 
   return (
     <View style={styles.screen}>

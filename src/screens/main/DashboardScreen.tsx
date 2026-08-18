@@ -100,16 +100,16 @@ export default function DashboardScreen({ navigation }: any) {
           onPress={() => navigation.navigate('Products')}
         />
         <QuickActionButton
-          icon="users"
-          label="Customers"
+          icon="file-text"
+          label="Receipts"
           backgroundColor="#EA580C"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Receipts')}
         />
         <QuickActionButton
           icon="bar-chart-2"
           label="Reports"
           backgroundColor="#2563EB"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Reports')}
         />
       </View>
     </ScrollView>
