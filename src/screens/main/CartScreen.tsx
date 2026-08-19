@@ -44,46 +44,48 @@ export default function CartScreen({ navigation }: any) {
         </TouchableOpacity>
       </LinearGradient>
 
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.product.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <CartItemRow
-            item={item}
-            onIncrease={() => updateQuantity(item.product.id, item.quantity + 1)}
-            onDecrease={() => updateQuantity(item.product.id, item.quantity - 1)}
-            onRemove={() => removeFromCart(item.product.id)}
-          />
+      <View style={styles.body}>
+        <FlatList
+          data={items}
+          keyExtractor={(item) => item.product.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          renderItem={({ item }) => (
+            <CartItemRow
+              item={item}
+              onIncrease={() => updateQuantity(item.product.id, item.quantity + 1)}
+              onDecrease={() => updateQuantity(item.product.id, item.quantity - 1)}
+              onRemove={() => removeFromCart(item.product.id)}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Icon name="shopping-cart" size={40} color={colors.placeholder} />
+              <Text style={styles.emptyText}>Your cart is empty</Text>
+            </View>
+          }
+        />
+
+        {items.length > 0 && (
+          <View style={styles.summary}>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Subtotal</Text>
+              <Text style={styles.summaryValue}>KSh {totalPrice.toFixed(2)}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Tax (16%)</Text>
+              <Text style={styles.summaryValue}>KSh {tax.toFixed(2)}</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalValue}>KSh {total.toFixed(2)}</Text>
+            </View>
+
+            <GradientButton label="Proceed to Checkout" onPress={handleCheckout} />
+          </View>
         )}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Icon name="shopping-cart" size={40} color={colors.placeholder} />
-            <Text style={styles.emptyText}>Your cart is empty</Text>
-          </View>
-        }
-      />
-
-      {items.length > 0 && (
-        <View style={styles.summary}>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>KSh {totalPrice.toFixed(2)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Tax (16%)</Text>
-            <Text style={styles.summaryValue}>KSh {tax.toFixed(2)}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.summaryRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>KSh {total.toFixed(2)}</Text>
-          </View>
-
-          <GradientButton label="Proceed to Checkout" onPress={handleCheckout} />
-        </View>
-      )}
+      </View>
     </View>
   );
 }
@@ -100,11 +102,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: 50,
     paddingBottom: spacing.lg,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   headerTitle: {
     fontSize: 17,
     fontWeight: '700',
     color: colors.white,
+  },
+  body: {
+    flex: 1,
+    backgroundColor: colors.white,
+    marginTop: 1,
+    overflow: 'hidden',
   },
   listContent: {
     padding: spacing.lg,

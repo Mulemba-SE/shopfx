@@ -43,7 +43,7 @@ export default function CheckoutScreen({ navigation }: any) {
 
     addTransaction(transactionData);
     clearCart();
-    navigation.navigate('TransactionDetails', transactionData);
+    navigation.navigate('TransactionDetails', { ...transactionData, mode: 'confirmation' });
   }
 
   return (

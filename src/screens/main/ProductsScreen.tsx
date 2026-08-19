@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import { colors, spacing } from '../../theme/colors';
 import FilterTabs from '../../components/products/FilterTabs';
@@ -29,8 +30,8 @@ export default function ProductsScreen({ navigation, route }: any) {
 
   const { products } = useProducts();
   const filteredProducts = useMemo(() => {
-  const statusFilter = filterToStatus[activeTab];
-  return products.filter((product) => {
+    const statusFilter = filterToStatus[activeTab];
+    return products.filter((product) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -40,7 +41,7 @@ export default function ProductsScreen({ navigation, route }: any) {
   }, [searchQuery, activeTab]);
 
   function handleAddProduct() {
-  navigation.navigate('AddProduct');
+    navigation.navigate('AddProduct');
   }
 
   function handleProductPress(product: Product) {
@@ -51,48 +52,55 @@ export default function ProductsScreen({ navigation, route }: any) {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={[colors.gradientStart, colors.gradientMid, colors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => navigation?.goBack?.()}>
-          <Icon name="arrow-left" size={22} color={colors.textPrimary} />
+          <Icon name="arrow-left" size={22} color={colors.white} />
         </TouchableOpacity>
         <Text style={styles.title}>Products</Text>
         <TouchableOpacity style={styles.addButton} onPress={handleAddProduct}>
           <Icon name="plus" size={20} color={colors.white} />
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      <View style={styles.searchBar}>
-        <Icon name="search" size={18} color={colors.placeholder} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search product"
-          placeholderTextColor={colors.placeholder}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
+      <View style={styles.body}>
+        <View style={styles.searchBar}>
+          <Icon name="search" size={18} color={colors.placeholder} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search product"
+            placeholderTextColor={colors.placeholder}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
 
-      <FilterTabs tabs={FILTER_TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
+        <FilterTabs tabs={FILTER_TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
 
-      <FlatList
+        <FlatList
           data={filteredProducts}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-          <ProductListItem
-            product={item}
-            onPress={() => handleProductPress(item)}
-            onMenuPress={() => handleProductMenu(item)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Icon name="package" size={40} color={colors.placeholder} />
-            <Text style={styles.emptyText}>No products found</Text>
-          </View>
-        }
-      />
+            <ProductListItem
+              product={item}
+              onPress={() => handleProductPress(item)}
+              onMenuPress={() => handleProductMenu(item)}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Icon name="package" size={40} color={colors.placeholder} />
+              <Text style={styles.emptyText}>No products found</Text>
+            </View>
+          }
+        />
+      </View>
     </View>
   );
 }
@@ -101,27 +109,37 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: spacing.lg,
-    paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingTop: 50,
+    paddingBottom: spacing.lg,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: colors.white,
   },
   addButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.gradientStart,
+    backgroundColor: 'rgba(255,255,255,0.25)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  body: {
+    flex: 1,
+    backgroundColor: colors.white,
+    marginTop: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    overflow: 'hidden',
   },
   searchBar: {
     flexDirection: 'row',

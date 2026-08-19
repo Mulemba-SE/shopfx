@@ -7,7 +7,6 @@ import { mockUser } from '../../types/mockData';
 import GradientButton from '../../components/GradientButton';
 import { TransactionDetailsParams } from '../../types/transaction';
 
-
 export default function TransactionDetailsScreen({ navigation, route }: any) {
   const params: TransactionDetailsParams = route.params ?? {
     receiptNumber: '',
@@ -18,6 +17,8 @@ export default function TransactionDetailsScreen({ navigation, route }: any) {
     paymentMethod: '',
     items: [],
   };
+  const mode: 'confirmation' | 'view' = route.params?.mode ?? 'view';
+
   const dateObj = new Date(params.date);
   const formattedDate = dateObj.toLocaleDateString('en-KE', {
     day: '2-digit',
@@ -33,34 +34,49 @@ export default function TransactionDetailsScreen({ navigation, route }: any) {
     navigation.navigate('SellHome');
   }
 
+  function handleBack() {
+    navigation.goBack();
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleDone}>
+        <TouchableOpacity onPress={mode === 'confirmation' ? handleDone : handleBack}>
           <Icon name="arrow-left" size={22} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transaction Details</Text>
+        <Text style={styles.headerTitle}>
+          {mode === 'confirmation' ? 'Transaction Details' : 'Receipt'}
+        </Text>
         <TouchableOpacity>
           <Icon name="printer" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <LinearGradient
-          colors={['#0D9488', '#16A34A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.successCard}
-        >
-          <View style={styles.checkCircle}>
-            <Icon name="check" size={28} color="#16A34A" />
+        {mode === 'confirmation' ? (
+          <LinearGradient
+            colors={['#0D9488', '#16A34A']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.successCard}
+          >
+            <View style={styles.checkCircle}>
+              <Icon name="check" size={28} color="#16A34A" />
+            </View>
+            <Text style={styles.successTitle}>Sale Completed</Text>
+            <Text style={styles.invoiceText}>Receipt #{params.receiptNumber}</Text>
+            <Text style={styles.dateText}>
+              {formattedDate} • {formattedTime}
+            </Text>
+          </LinearGradient>
+        ) : (
+          <View style={styles.viewHeader}>
+            <Text style={styles.viewReceiptNumber}>Receipt #{params.receiptNumber}</Text>
+            <Text style={styles.dateTextPlain}>
+              {formattedDate} • {formattedTime}
+            </Text>
           </View>
-          <Text style={styles.successTitle}>Sale Completed</Text>
-          <Text style={styles.invoiceText}>Receipt #{params.receiptNumber}</Text>
-          <Text style={styles.dateText}>
-            {formattedDate} • {formattedTime}
-          </Text>
-        </LinearGradient>
+        )}
 
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>
@@ -108,9 +124,11 @@ export default function TransactionDetailsScreen({ navigation, route }: any) {
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
-        <GradientButton label="Done" onPress={handleDone} />
-      </View>
+      {mode === 'confirmation' && (
+        <View style={styles.footer}>
+          <GradientButton label="Done" onPress={handleDone} />
+        </View>
+      )}
     </View>
   );
 }
@@ -165,6 +183,20 @@ const styles = StyleSheet.create({
   dateText: {
     color: 'rgba(255,255,255,0.75)',
     fontSize: 12,
+    marginTop: 2,
+  },
+  viewHeader: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  viewReceiptNumber: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  dateTextPlain: {
+    fontSize: 12,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   infoSection: {

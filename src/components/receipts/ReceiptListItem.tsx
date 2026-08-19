@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { colors, spacing } from '../../theme/colors';
+import { colors, spacing, receiptIconVariants } from '../../theme/colors';
 import { TransactionDetailsParams } from '../../types/transaction';
 
 interface ReceiptListItemProps {
   transaction: TransactionDetailsParams;
+  index: number;
   onPress: () => void;
 }
 
@@ -16,7 +17,13 @@ const paymentIcons: Record<string, string> = {
   Other: 'list',
 };
 
-export default function ReceiptListItem({ transaction, onPress }: ReceiptListItemProps) {
+const statusStyles: Record<string, { bg: string; text: string }> = {
+  Paid: { bg: colors.successBg, text: colors.success },
+  Pending: { bg: colors.inputBackground, text: colors.textSecondary },
+  Refunded: { bg: '#FBE4EA', text: '#D6316E' },
+};
+
+export default function ReceiptListItem({ transaction, index, onPress }: ReceiptListItemProps) {
   const dateObj = new Date(transaction.date);
   const formattedDate = dateObj.toLocaleDateString('en-KE', {
     day: '2-digit',
@@ -27,27 +34,36 @@ export default function ReceiptListItem({ transaction, onPress }: ReceiptListIte
     hour: '2-digit',
     minute: '2-digit',
   });
-  const itemCount = transaction.items.reduce((sum, item) => sum + item.quantity, 0);
+
+  const customerName = transaction.customerName ?? 'Walk-in Customer';
+  const status = transaction.status ?? 'Paid';
+  const statusStyle = statusStyles[status] ?? statusStyles.Paid;
+  const variant = receiptIconVariants[index % receiptIconVariants.length];
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.iconBox}>
+      <View style={[styles.iconBox, { backgroundColor: variant.bg }]}>
         <Icon
           name={paymentIcons[transaction.paymentMethod] ?? 'file-text'}
           size={20}
-          color={colors.gradientStart}
+          color={variant.icon}
         />
       </View>
+
       <View style={styles.info}>
         <Text style={styles.receiptNumber}>{transaction.receiptNumber}</Text>
-        <Text style={styles.meta}>
-          {formattedDate} • {formattedTime} • {itemCount} {itemCount === 1 ? 'item' : 'items'}
-        </Text>
+        <Text style={styles.customerName} numberOfLines={1}>{customerName}</Text>
+        <Text style={styles.meta}>{formattedDate} • {formattedTime}</Text>
       </View>
+
       <View style={styles.rightSection}>
         <Text style={styles.total}>KSh {transaction.total.toFixed(2)}</Text>
-        <Text style={styles.paymentMethod}>{transaction.paymentMethod}</Text>
+        <View style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}>
+          <Text style={[styles.statusText, { color: statusStyle.text }]}>{status}</Text>
+        </View>
       </View>
+
+      <Icon name="chevron-right" size={18} color={colors.placeholder} style={styles.chevron} />
     </TouchableOpacity>
   );
 }
@@ -64,7 +80,6 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: colors.inputBackground,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -74,25 +89,39 @@ const styles = StyleSheet.create({
   },
   receiptNumber: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
   },
-  meta: {
-    fontSize: 12,
+  customerName: {
+    fontSize: 13,
     color: colors.textSecondary,
+    marginTop: 2,
+  },
+  meta: {
+    fontSize: 11,
+    color: colors.placeholder,
     marginTop: 2,
   },
   rightSection: {
     alignItems: 'flex-end',
+    marginRight: spacing.xs,
   },
   total: {
     fontSize: 15,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  paymentMethod: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 2,
+  statusBadge: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 20,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  chevron: {
+    marginLeft: spacing.xs,
   },
 });

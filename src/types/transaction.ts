@@ -4,6 +4,8 @@ export interface SoldItem {
   price: number;
 }
 
+export type ReceiptStatus = 'Paid' | 'Pending' | 'Refunded';
+
 export interface TransactionDetailsParams {
   receiptNumber: string;
   date: string;
@@ -12,4 +14,6 @@ export interface TransactionDetailsParams {
   total: number;
   paymentMethod: string;
   items: SoldItem[];
+  customerName?: string; 
+  status?: ReceiptStatus;
 }

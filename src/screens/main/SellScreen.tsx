@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import { colors, spacing } from '../../theme/colors';
 import CategoryTabs from '../../components/sell/CategoryTabs';
@@ -44,54 +45,61 @@ export default function SellScreen({ navigation }: any) {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
+      <LinearGradient
+        colors={[colors.gradientStart, colors.gradientMid, colors.gradientEnd]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => navigation.goBack?.()}>
-          <Icon name="arrow-left" size={22} color={colors.textPrimary} />
+          <Icon name="arrow-left" size={22} color={colors.white} />
         </TouchableOpacity>
         <Text style={styles.title}>New Sale</Text>
         <TouchableOpacity>
-          <Icon name="maximize" size={22} color={colors.textPrimary} />
+          <Icon name="maximize" size={22} color={colors.white} />
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      <View style={styles.contentPadding}>
-        <View style={styles.searchBar}>
-          <Icon name="search" size={18} color={colors.placeholder} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search product by name or SKU"
-            placeholderTextColor={colors.placeholder}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
+      <View style={styles.body}>
+        <View style={styles.contentPadding}>
+          <View style={styles.searchBar}>
+            <Icon name="search" size={18} color={colors.placeholder} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search product by name or SKU"
+              placeholderTextColor={colors.placeholder}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <CategoryTabs
+            categories={CATEGORY_TABS}
+            activeCategory={activeCategory}
+            onSelectCategory={setActiveCategory}
           />
         </View>
 
-        <CategoryTabs
-          categories={CATEGORY_TABS}
-          activeCategory={activeCategory}
-          onSelectCategory={setActiveCategory}
+        <FlatList
+          data={filteredProducts}
+          keyExtractor={(item) => item.id}
+          numColumns={3}
+          showsVerticalScrollIndicator={false}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.gridContent}
+          renderItem={({ item }) => (
+            <ProductGridItem product={item} onPress={() => handleAddToCart(item)} />
+          )}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Icon name="search" size={40} color={colors.placeholder} />
+              <Text style={styles.emptyText}>No products found</Text>
+            </View>
+          }
         />
+
+        <CartBar itemCount={totalItems} totalPrice={totalPrice} onPress={handleViewCart} />
       </View>
-
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        showsVerticalScrollIndicator={false}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.gridContent}
-        renderItem={({ item }) => (
-          <ProductGridItem product={item} onPress={() => handleAddToCart(item)} />
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Icon name="search" size={40} color={colors.placeholder} />
-            <Text style={styles.emptyText}>No products found</Text>
-          </View>
-        }
-      />
-
-      <CartBar itemCount={totalItems} totalPrice={totalPrice} onPress={handleViewCart} />
     </View>
   );
 }
@@ -101,21 +109,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingTop: 50,
-    marginBottom: spacing.md,
-  },
+header: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingHorizontal: spacing.lg,
+  paddingTop: 50,
+  paddingBottom: spacing.lg,
+  borderBottomLeftRadius: 24,
+  borderBottomRightRadius: 24,
+},
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: colors.white,
   },
+body: {
+  flex: 1,
+  backgroundColor: colors.white,
+  marginTop: 1,
+  overflow: 'hidden',
+},
   contentPadding: {
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
   },
   searchBar: {
     flexDirection: 'row',
