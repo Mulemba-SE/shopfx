@@ -16,13 +16,13 @@ export interface AuthResult {
   message: string;
 }
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
 export async function loginUser(payload: LoginPayload): Promise<AuthResult> {
   console.log('[mock] loginUser called with:', payload);
-  await delay(1200); 
+  await delay(1200);
 
   if (!payload.emailOrPhone || !payload.password) {
     return { success: false, message: 'Email/phone and password are required.' };
